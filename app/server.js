@@ -16,7 +16,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
-  res.status(200).json({ msg: 'Hello World' })
+  res.status(200).send('Spatial Vision Technical Task API')
 })
 
 app.use('/api/users', userRoute)
