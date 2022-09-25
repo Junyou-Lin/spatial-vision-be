@@ -37,7 +37,7 @@ const registerUser = async (req, res) => {
       lastName,
       address,
       dob,
-      email,
+      email: email.toLowerCase(),
       password: hashedPassword,
       location: {
         type: 'Point',
@@ -67,9 +67,9 @@ const loginUser = async (req, res) => {
     }
 
     // Check if user exists
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ email: email.toLowerCase() })
     if (!user) {
-      return res.status(400).send('User does not exists, please sign up')
+      return res.status(400).send('User does not exist, please sign up')
     }
 
     // Check if password is correct
@@ -127,7 +127,7 @@ const updateOneUser = async (req, res) => {
       lastName,
       address,
       dob,
-      email,
+      email: email.toLowerCase(),
       password: hashedPassword,
       location: {
         type: 'Point',
