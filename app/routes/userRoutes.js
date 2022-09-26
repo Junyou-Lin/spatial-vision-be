@@ -7,10 +7,15 @@ const {
   updateOneUser,
 } = require('../controllers/userController')
 const { protect } = require('../middleware/authMiddleware')
+const {
+  loginValidation,
+  userValidate,
+  userValidation,
+} = require('../validations/userValidation')
 
-router.post('/', registerUser)
-router.post('/login', loginUser)
+router.post('/', userValidation(), userValidate, registerUser)
+router.post('/login', loginValidation(), userValidate, loginUser)
 router.get('/', protect, getOneUser)
-router.put('/', protect, updateOneUser)
+router.put('/', protect, userValidation(), userValidate, updateOneUser)
 
 module.exports = router

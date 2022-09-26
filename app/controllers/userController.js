@@ -4,34 +4,14 @@ const User = require('../models/userModel')
 
 //register user
 const registerUser = async (req, res) => {
+  const { firstName, lastName, address, dob, email, password, location } =
+    req.body
+
+  // Hash password
+  const salt = await bcrypt.genSalt(10)
+  const hashedPassword = await bcrypt.hash(password, salt)
+
   try {
-    const { firstName, lastName, address, dob, email, password, location } =
-      req.body
-
-    //check for empty fields
-    if (
-      !firstName ||
-      !lastName ||
-      !address ||
-      !dob ||
-      !email ||
-      !password ||
-      !location
-    ) {
-      return res.status(400).send('Please fill in all input fields')
-    }
-
-    // Check if user exists
-    const userExists = await User.findOne({ email })
-    if (userExists) {
-      return res.status(400).send('User already exists with this email')
-    }
-
-    // Hash password
-    const salt = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash(password, salt)
-
-    // Create user
     const user = await User.create({
       firstName,
       lastName,
@@ -44,13 +24,9 @@ const registerUser = async (req, res) => {
         coordinates: [location.longitude, location.latitude],
       },
     })
-    if (user) {
-      res.status(201).json({
-        token: generateToken(user._id),
-      })
-    } else {
-      return res.status(400).send('Invalid user data')
-    }
+    res.status(201).json({
+      token: generateToken(user._id),
+    })
   } catch (err) {
     res.status(500).json(err)
   }
@@ -59,28 +35,10 @@ const registerUser = async (req, res) => {
 //login user
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body
-
-    //check for empty fields
-    if (!email || !password) {
-      return res.status(400).send('Please fill in all input fields')
-    }
-
-    // Check if user exists
-    const user = await User.findOne({ email: email.toLowerCase() })
-    if (!user) {
-      return res.status(400).send('User does not exist, please sign up')
-    }
-
-    // Check if password is correct
-    const match = await bcrypt.compare(password, user.password)
-    if (match) {
-      res.json({
-        token: generateToken(user._id),
-      })
-    } else {
-      return res.status(400).send('Invalid credentials')
-    }
+    const user = await User.findOne({ email: req.body.email.toLowerCase() })
+    res.json({
+      token: generateToken(user._id),
+    })
   } catch (err) {
     res.status(500).json(err)
   }
@@ -88,40 +46,18 @@ const loginUser = async (req, res) => {
 
 // Get user profile
 const getOneUser = async (req, res) => {
-  try {
-    if (!req.user) {
-      return res.status(400).send('User not found')
-    }
-    res.json(req.user)
-  } catch (err) {
-    res.status(500).json(err)
-  }
+  res.json(req.user)
 }
 
+// Update user profile
 const updateOneUser = async (req, res) => {
+  const { firstName, lastName, address, dob, email, password, location } =
+    req.body
+
+  // Hash password
+  const salt = await bcrypt.genSalt(10)
+  const hashedPassword = await bcrypt.hash(password, salt)
   try {
-    if (!req.user) {
-      return res.status(400).send('User not found')
-    }
-    const { firstName, lastName, address, dob, email, password, location } =
-      req.body
-
-    if (
-      !firstName ||
-      !lastName ||
-      !address ||
-      !dob ||
-      !email ||
-      !password ||
-      !location
-    ) {
-      return res.status(400).send('Please fill in all input fields')
-    }
-
-    // Hash password
-    const salt = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash(password, salt)
-
     const user = await User.findByIdAndUpdate(req.user._id, {
       firstName,
       lastName,
@@ -134,9 +70,7 @@ const updateOneUser = async (req, res) => {
         coordinates: [location.longitude, location.latitude],
       },
     })
-    if (user) {
-      res.status(200).send('User updated successfully')
-    }
+    res.status(200).send('User updated successfully')
   } catch (err) {
     res.status(500).json(err)
   }
