@@ -2,7 +2,6 @@ org: junyou
 app: serverless
 service: spatial-vision-be
 frameworkVersion: '3'
-useDotenv: true
 
 provider:
   name: aws
@@ -21,6 +20,6 @@ functions:
           path: /{proxy+}
           method: any
     environment:
-      PORT: ${env:PORT}
-      MONGODB_URI: ${env:MONGODB_URI}
-      JWT_SECRET: ${env:JWT_SECRET}
+      PORT: ${param:PORT}
+      MONGODB_URI: ${param:MONGODB_URI}
+      JWT_SECRET: ${param:JWT_SECRET}
