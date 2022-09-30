@@ -1,0 +1,26 @@
+org: junyou
+app: serverless
+service: spatial-vision-be
+frameworkVersion: '3'
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  stage: prod
+  region: us-east-1
+
+functions:
+  lambda:
+    handler: index.handler
+    events:
+      - http:
+          path: /
+          method: get
+      - http:
+          path: /{proxy+}
+          method: any
+    environment:
+      PORT: ${env:PORT}
+      MONGODB_URI: ${env:MONGODB_URI}
+      JWT_SECRET: ${env:JWT_SECRET}
