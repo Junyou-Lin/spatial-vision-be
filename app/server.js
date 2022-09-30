@@ -16,7 +16,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
-  res.status(200).send('Spatial Vision Technical Task API')
+  res.status(200).send('Spatial Vision Technical Task API version 1.0')
 })
 
 app.use('/api/users', userRoute)
